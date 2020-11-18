@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./头像.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./bootstrap-4.5.0-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./scroll.css">
+    <script src="./art-template/template-web.js"></script>
+    <script src="./jQuery.min.js"></script>
+    <script src="./index.js"></script>
+    <!-- <script src="./bootstrap-4.5.0-dist/js/bootstrap.min.js"></script> -->
+    <title>文件中转</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            /* background-image: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
+            background-size: 400%;
+            background-color: rgba(0, 0, 0, .8);
+            animation: sun 32s linear infinite; */
+            background-color: #dbedff;
+        }
+        
+        @keyframes sun {
+            100% {
+                /* 以x轴为基准向左移动4个自身大小 */
+                background-position: -400% 0;
+            }
+        }
+        
+        .jumbotron-fluid {
+            margin-bottom: 0;
+            background-color: #cceaff;
+        }
+        
+        .container p {
+            margin-bottom: 0;
+        }
+        
+        .alert {
+            text-align: center;
+        }
+        
+        .formBox {
+            max-width: 1200px;
+            padding-left: 50px;
+            padding-right: 50px;
+            margin: 0 auto;
+        }
+        
+        .ulBox {
+            max-width: 1200px;
+            padding-left: 50px;
+            padding-right: 50px;
+            margin: 0 auto;
+        }
+        
+        .Powered {
+            text-align: center;
+            margin: 10px;
+        }
+        
+        @media (max-width: 750px) {
+            .formBox {
+                padding-left: 10px;
+                padding-right: 10px;
+                margin: 0;
+            }
+            .lead {
+                font-size: 1.05rem;
+            }
+            .container p {
+                margin-bottom: 5px;
+            }
+            .ulBox {
+                padding-left: 10px;
+                padding-right: 10px;
+                margin: 0;
+            }
+        }
+        
+        a {
+            /*去掉下划线*/
+            text-decoration: none;
+        }
+        
+        button {
+            margin-bottom: 20px;
+        }
+        
+        #uploadLabel {
+            overflow: hidden;
+        }
+        
+        .middle {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">文件中转</h1>
+            <p class="lead">该功能用于通过服务器中转将文件传输到不同的设备上😝</p>
+            <p class="lead">在只有网络而没有数据线或其他什么传输设备时,使用该功能将会非常愉快的中转文件😀</p>
+            <p class="lead">由于服务器限制,文件大小不能超过10M,且文件只能保留一天😭</p>
+        </div>
+    </div>
+    <div class="message" id="infoBox">
+
+    </div>
+    <div class="formBox">
+        <form action="#">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">关键字</span>
+                </div>
+                <input id="key" type="text" class="form-control" placeholder="下载时输入上传的关键字" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroupFileAddon01">选择文件</span>
+                </div>
+                <div class="custom-file">
+                    <input id="upload" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
+                    <label id="uploadLabel" class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                </div>
+            </div>
+
+    </div>
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+
+            <button type="button" class="btn btn-primary col-auto load" id="submit">
+                <!-- <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> -->
+                上传
+            </button>
+            <button type="button" class="btn btn-success col-auto ml-2" id="query">
+                <!-- <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> -->
+                获取下载列表
+            </button>
+        </div>
+    </div>
+    </form>
+    </div>
+    <div class="ulBox">
+
+    </div>
+    <p class="Powered">
+        Powered by
+        <a href="https://queuecat.top">@列队猫</a>
+    </p>
+    <script type="text/html" id="infoTPL">
+        <div class="alert {{classText}}" role="alert" id="info" style="display: none;word-wrap: break-word;">
+            {{info}}
+        </div>
+        <!-- alert-primary -->
+        <!-- <div class="alert alert-success" role="alert">
+            成功
+        </div>
+        <div class="alert alert-danger" role="alert">
+            失败
+        </div>  -->
+    </script>
+    <script type="text/html" id="fileListTPL">
+        <ul class="list-group" style="display:none">
+            <li class="list-group-item active">{{key}}</li>
+            {{if fileList.length==0}}
+            <li class="list-group-item">抱歉,未找到相关文件😑，您还可以访问：
+            </li>
+            <a href="/">
+                <li class="list-group-item">主页</li>
+            </a>
+            <a href="https://blog.csdn.net/qq_43915356">
+                <li class="list-group-item">CSDN</li>
+            </a>
+            <a href="https://github.com/queuecat">
+                <li class="list-group-item">GitHub</li>
+            </a>
+            {{else}} {{each fileList}}
+            <li class="list-group-item">{{$value.filename}}
+                <a href="{{$value.path}}" download>
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-down-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                        <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z"/>
+                      </svg>
+                </a>
+            </li>
+            {{/each}} {{/if}}
+
+        </ul>
+    </script>
+</body>
+
+</html>
