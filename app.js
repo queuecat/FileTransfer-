@@ -28,7 +28,7 @@ app.use(formidableMiddleware({
 //维护一个全局变量，每次调用接口时，更新该变量为最新时间
 var Time = new Date();
 //该函数用于检测当前时间和全局变量维护的时间是否为同一天，不同则删除文件夹中全部文件
-function deleteFile(time) {
+function deleteFile(time, notDeleteFile) {
     if (time.getDate() != Time.getDate()) {
 
         //dir存文件夹名称
@@ -36,7 +36,10 @@ function deleteFile(time) {
         //遍历所有文件夹
         dir.forEach(function(itm, index) {
             try {
-                fs.unlinkSync(path.join(__dirname, 'public/uploads', itm));
+                if (itm != notDeleteFile) {
+                    fs.unlinkSync(path.join(__dirname, 'public/uploads', itm));
+
+                }
             } catch (err) {
                 console.log("\033[41;30m 删除时错误 \033[0m", new Date().Format("yyyy-MM-dd hh:mm:ss"), ' 抛出的异常 ' + err);
 
@@ -48,19 +51,28 @@ function deleteFile(time) {
 
 
 }
+//从路径中获取文件名
+function getFileName(path) {
+    var name = path.split('/');
+    name = name[name.length - 1];
+    name = path.split('\\');
+    return name[name.length - 1];
+}
 app.post('/upload', (req, res) => {
-        deleteFile(new Date());
+        deleteFile(new Date(), getFileName(req.files.screenshot.path));
         try {
             if (req.files) {
                 fs.renameSync(path.join(req.files.screenshot.path), path.join(__dirname, 'public/uploads', req.fields.key))
                 return res.send({ message: '文件' + req.files.screenshot.name + '上传成功' });
 
             } else {
-                return res.status(400).send({ message: '文件上传时遇到错误' })
+                return res.status(400).send({ message: '文件上传时遇到错误' });
             }
         } catch (err) {
             return res.status(400).send({ message: '文件上传时遇到错误' + err })
         }
+
+
     })
     //遍历检索函数
 function searchkey(key) {
@@ -91,7 +103,7 @@ function searchkey(key) {
 
 }
 app.post('/query', (req, res) => {
-    deleteFile(new Date());
+    deleteFile(new Date(), getFileName(req.files.screenshot.path));
 
     try {
         var result = searchkey(req.fields.key);
