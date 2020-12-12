@@ -103,7 +103,7 @@ function searchkey(key) {
 
 }
 app.post('/query', (req, res) => {
-    deleteFile(new Date(), getFileName(req.files.screenshot.path));
+    deleteFile(new Date(), getFileName(req.fields.key));
 
     try {
         var result = searchkey(req.fields.key);
